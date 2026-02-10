@@ -33,22 +33,45 @@ def show_user(user: User):
         rx.table.cell(user.gender),
     )
 
-
-def form():
-    return rx.form(
-        rx.vstack(
-        rx.input(placeholder="User Name", name="name", required=True),
-        rx.input(placeholder="User@reflex.com", name="email"),
-        rx.select(["Male", "Female"], placeholder="Male", name="gender"),
-        rx.button("Submit", type="submit"),
+def add_costumer_button() -> rx.Component:
+    return rx.dialog.root(
+        rx.dialog.trigger(
+            rx.button(
+                rx.icon("plus", size=26),
+                rx.text("Add user", size="4"),
+            ),
         ),
-        on_submit=State.add_user,
-        reset_on_submit=True,
+        rx.dialog.content(
+            rx.dialog.title("Add new user"),
+            rx.dialog.description("Fill the form with user's info"),
+            rx.form(
+                rx.flex(
+                    rx.input(placeholder="Name", name="name", required=True),
+                    rx.input(placeholder="Email", name="email"),
+                    rx.select(["Male", "Female"], placeholder="Gender", name="gender"),
+                    rx.flex(
+                        rx.dialog.close(
+                            rx.button("Cancel", variant="soft", color_scheme="gray")
+                        ),
+                        rx.dialog.close(
+                            rx.button("Submit", type="submit")
+                        ),
+                        spacing="3",
+                        justify="end",
+                    ),
+                    direction="column",
+                    spacing="4",
+                ),
+                on_submit=State.add_user,
+                reset_on_submit=True,
+            ),
+            max_width="450px",
+        ),
     )
 
 def index() -> rx.Component:
     return rx.vstack(
-        form(),
+        add_costumer_button(),
         rx.table.root(
             rx.table.header(
                 rx.table.row(
