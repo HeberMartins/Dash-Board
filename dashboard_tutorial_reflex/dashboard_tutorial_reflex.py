@@ -35,6 +35,7 @@ class State(rx.State):
             user.gender for user in self.users
         )
 
+        #Transform into list of dict so it can be used in the graph
         self.users_for_graph = [
             {"name": gender_group, "value": count}
             for gender_group, count in gender_counts.items()
@@ -48,6 +49,8 @@ def show_user(user: User):
         rx.table.cell(user.name),
         rx.table.cell(user.email),
         rx.table.cell(user.gender),
+        style={"_hover": {"bg": rx.color("gray", 3)}},
+        align="center",
     )
 
 def add_costumer_button() -> rx.Component:
@@ -63,9 +66,20 @@ def add_costumer_button() -> rx.Component:
             rx.dialog.description("Fill the form with user's info"),
             rx.form(
                 rx.flex(
-                    rx.input(placeholder="Name", name="name", required=True),
-                    rx.input(placeholder="Email", name="email"),
-                    rx.select(["Male", "Female"], placeholder="Gender", name="gender"),
+                    rx.input(
+                             placeholder="Name",
+                             name="name",
+                             required=True
+                    ),
+                    rx.input(
+                        placeholder="Email",
+                        name="email"
+                    ),
+                    rx.select(
+                        ["Male", "Female"],
+                        placeholder="Gender",
+                        name="gender"
+                    ),
                     rx.flex(
                         rx.dialog.close(
                             rx.button("Cancel", variant="soft", color_scheme="gray")
@@ -117,12 +131,19 @@ def index() -> rx.Component:
             ),
             variant="surface",
             size="3",
+            width="100%",
         ),
         graph(),
+        align="center",
+        width="100%",
     )
 
-
-
-
-app = rx.App()
-app.add_page(index)
+app = rx.App(
+    theme=rx.theme(radius="full", accent_color="grass"),
+)
+app.add_page(
+    index,
+    title="Customer Data App",
+    description="A simple app to manage customer data.",
+    on_load=State.transform_data,
+)
